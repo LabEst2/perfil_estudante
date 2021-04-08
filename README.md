@@ -16,9 +16,9 @@ git clone https://github.com/LabEst2/perfil_estudante
 
 
 ## Importação dos Dados Inicias 
-1. [Os dados inicias](#https://github.com/LabEst2/perfil_estudante/blob/main/bancofinalreduzido_12012_22017_m_PerfEstudante.zip)
-2. [Limpeza dos dados](#https://github.com/LabEst2/perfil_estudante/blob/main/limpezabanco.R)
-3. [Banco de Dados já limpo](#https://github.com/LabEst2/perfil_estudante/blob/main/estudanteunb.rar)
+1. [Os dados inicias](https://github.com/LabEst2/perfil_estudante/blob/main/bancofinalreduzido_12012_22017_m_PerfEstudante.zip)
+2. [Limpeza dos dados](https://github.com/LabEst2/perfil_estudante/blob/main/limpezabanco.R)
+3. [Banco de Dados já limpo](https://github.com/LabEst2/perfil_estudante/blob/main/estudanteunb.rar)
 
 ## Criação do Dashboard
 
