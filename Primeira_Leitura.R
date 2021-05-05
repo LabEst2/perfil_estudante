@@ -5,31 +5,80 @@ library(stringr)
 
 ###### leitura de dados #####
 
+`%notin%` <- Negate(`%in%`)
 
-Estudantes = read_xlsx('D:\\Users\\Public\\Documents\\UNB\\8º Semestre UNB\\LabEst2\\Projeto\\Dados\\estudanteunb.xlsx')
+Estudantes = read_xlsx('D:\\Users\\Public\\Documents\\Git\\perfil_estudante\\estudanteunb.xlsx')
 
 
+### Fazendo mudanças pertinentes nas variáveis ###########
+
+
+### criação de fator semestre ingresso ####
 
 Estudantes$semestre_ingresso <- factor(Estudantes$semestre_ingresso,
                                        levels = unique(Estudantes$semestre_ingresso),
                                        labels = unique(Estudantes$semestre_ingresso))
 
 
+
+
 Estudantes$semestre_ingresso <- ordered(Estudantes$semestre_ingresso,
-                                        levels= c("12012","22012","12013","22013","12014","22014","12015","22015","12016","22016","12017","22017"))
+                                        levels= c("12012","22012","12013","22013","12014","22014"
+                                                  ,"12015","22015","12016"
+                                                  ,"22016","12017","22017"))
 
 
+
+
+### Cruiação de Fator renda familiar e exlusão de elementos ######
+
+Estudantes <- Estudantes %>% filter(renda_familiar %notin% c("Ignorado","Não possui renda mensal"))
 
 Estudantes$renda_familiar <- as.factor(Estudantes$renda_familiar)
 
 levels(Estudantes$renda_familiar)
 Estudantes$renda_familiar <- ordered(Estudantes$renda_familiar,
-                                        levels= c("Ignorado" ,"Até 3 SM", "De 3 a 10 SM","De 10 a 20 SM" ,
-                                                  "Mais de 20 SM","Não possui renda mensal" ))
+                                        levels= c("Até 3 SM", "De 3 a 10 SM","De 10 a 20 SM" ,
+                                                  "Mais de 20 SM"))
 
 
 
 
+#### Mudança na modalidade de ingresso #######
+
+Estudantes$modalidade_ingresso %>% unique()
+
+Estudantes$modalidade_ingresso[Estudantes$modalidade_ingresso==
+                                 "Admissão para Portador de Diploma de Curso Superior (DCS)"] <- "DCS"
+
+
+#### Filtro de cor e Raça #######
+
+
+Estudantes <- Estudantes %>% filter(cor_raca%notin% c('Ignorado','Outros'))
+
+
+
+##### Criação de vetores com os principais filtros das principais variáveis #######
+
+modalidades = Estudantes$modalidade_ingresso %>% unique()
+
+semestres = Estudantes$semestre_ingresso %>% unique()
+
+rendas = Estudantes$renda_familiar %>% unique()
+
+em_s = Estudantes$ensino_medio %>% unique()
+
+ef_s = Estudantes$ensino_fundamental %>% unique()
+
+sexos = Estudantes$sexo %>% unique()
+
+transportes = Estudantes$transporte %>% unique()
+
+tentativas = Estudantes$tentativas %>% unique()
+
+
+#### Criando Variável com nomes das variáveis e variáveis em groups que podem ser chamadas #####
 
 
 nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Idade','Nacionalidade',
@@ -67,6 +116,9 @@ nomes_de_apresentacao <- sort(nomes_de_apresentacao)
 
 names(new_groups) <- nomes_de_apresentacao
 
+save(new_groups,file = 'D:/Users/Public/Documents/Git/perfil_estudante/new_groups.RDATA')
+
+
 #### Salvando arquivo rdata ######
 
 
@@ -100,20 +152,6 @@ Teste %>% filter( cor_raca %notin%c('Outro','Nao se aplica','Ignorado')) %>%
 ##### Descritiva de cor e raça ########
 
 agrupado <- Estudantes %>% group_by(cor_raca,semestre_ingresso,renda_familiar) %>% count()
-
-
-
-
-modalidades = Estudantes$modalidade_ingresso %>% unique()
-semestres = Estudantes$semestre_ingresso %>% unique()
-rendas = Estudantes$renda_familiar %>% unique()
-em_s = Estudantes$ensino_medio %>% unique()
-ef_s = Estudantes$ensino_fundamental %>% unique()
-sexos = Estudantes$sexo %>% unique()
-transportes = Estudantes$transporte %>% unique()
-tentativas = Estudantes$tentativas %>% unique()
-
-
 
 
 
