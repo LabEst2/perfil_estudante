@@ -58,6 +58,14 @@ Estudantes$modalidade_ingresso[Estudantes$modalidade_ingresso==
 Estudantes <- Estudantes %>% filter(cor_raca%notin% c('Ignorado','Outros'))
 
 
+Estudantes$sexo %>% unique()
+
+Estudantes$sexo <- as.factor(Estudantes$sexo)
+
+Estudantes$sexo <- ordered(Estudantes$sexo, 
+                           levels = c('Feminino',"Masculino",'Ignorado'))
+
+
 
 ##### Criação de vetores com os principais filtros das principais variáveis #######
 
@@ -81,7 +89,7 @@ tentativas = Estudantes$tentativas %>% unique()
 #### Criando Variável com nomes das variáveis e variáveis em groups que podem ser chamadas #####
 
 
-nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Idade','Nacionalidade',
+nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Nacionalidade',
                            'Cor & Raca','Religião','Renda Familiar','Benefício Social',
                            'Pessoas vivem da renda','Escolaridade Pai','Escolaridade Mãe','Ensino Fundamental',
                            'Ensino Médio','Tipo de ensino médio','Necessidade Especial','Tentativas','Auxilio',
@@ -92,7 +100,7 @@ nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo
 names(groups)
 
 
-groups = c(quo(modalidade_ingresso), quo(atendimento_especial),quo(sexo),quo(idade),quo(nacionalidade),
+groups = c(quo(modalidade_ingresso), quo(atendimento_especial),quo(sexo),quo(nacionalidade),
            quo(cor_raca),quo(religiao),quo(renda_familiar),quo(beneficio_social),quo(pessoas_vivem_da_renda),
            quo(escolaridade_pai),quo(escolaridade_mae),quo(ensino_fundamental),quo(ensino_medio),quo(tipo_ensino_medio),
            quo(necessidade_especial),quo(tentativas),quo(auxilio),quo(idioma),quo(curso_desejado),quo(trocaria_curso),

@@ -1,38 +1,24 @@
 library(shiny)
-
+library(shinyWidgets)
 nomes_variaveis_filtro <- function(){
-  nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Idade','Nacionalidade',
+  nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Nacionalidade',
                              'Cor & Raca','Religião','Renda Familiar','Benefício Social',
                              'Pessoas vivem da renda','Escolaridade Pai','Escolaridade Mãe','Ensino Fundamental',
                              'Ensino Médio','Tipo de ensino médio','Necessidade Especial','Tentativas','Auxilio',
                              'Idioma','Curso Desejado','Trocaria de Curso','Curso Preparatório','Transporte',
                              'Sistema de Ingresso')
+  nomes_de_apresentacao <- sort(nomes_de_apresentacao)
   return(nomes_de_apresentacao)
 }
 
 ##### Filtros iniciais #####
 
 filtros_lateral_inicial <- function() {
-  escolhas_rendas <- 'Todas'
-  escolhas_rendas[2:5] <- levels(Estudantes$renda_familiar)
-  
-  escolhas_semestre <- 'Todos'
-  escolhas_semestre[2:13] <- levels(Estudantes_RA$semestre_ingresso)
-  
-  escolhas_cotas <- "Todos"
-  
-  escolhas_cotas[2:3] <- unique(Estudantes$sistema_ingresso)[1:2]
-  
-  escolhas_campus <- "Todos"
-  
-  escolhas_campus[2:5] <- unique(Estudantes_RA$campus)
-  
-  
-  escolhas_semestres_2 <- escolhas_semestre[c(1,7:13)]
+ 
   box(class='floating-box',
       selectInput("variable", "Variáveis",
                   choices = nomes_variaveis_filtro(),
-                  selected = "Sistema de Ingresso"
+                  selected = "Renda Familiar"
       ),
       width = 3
   )
@@ -42,34 +28,33 @@ filtros_lateral_inicial <- function() {
 
 
 filtros_lateral_raca_cor <- function() {
-  escolhas_rendas <- 'Todas'
-  escolhas_rendas[2:5] <- levels(Estudantes$renda_familiar)
-  
-  escolhas_semestre <- 'Todos'
-  escolhas_semestre[2:13] <- levels(Estudantes_RA$semestre_ingresso)
-  
-  escolhas_cotas <- "Todos"
-  
-  escolhas_cotas[2:3] <- unique(Estudantes$sistema_ingresso)[1:2]
-  
-  escolhas_campus <- "Todos"
-  
-  escolhas_campus[2:5] <- unique(Estudantes_RA$campus)
+  escolhas_rendas <- levels(Estudantes$renda_familiar)
   
   
-  escolhas_semestres_2 <- escolhas_semestre[c(1,7:13)]
+  escolhas_semestre <- levels(Estudantes_RA$semestre_ingresso)
+  
+  
+  escolhas_cotas <- unique(Estudantes$sistema_ingresso)[1:2]
+  
   box(class='floating-box',
-      selectInput(inputId = 'semestre_ingresso','Semestre de ingresso',
+       pickerInput(inputId = 'semestre_ingresso',
+                   label ='Semestre de ingresso',
                   choices =escolhas_semestre,
-                  selected = "22017" ),
+                  selected = "22017",
+                  options = list('actions-box'=TRUE),
+                  multiple = T),
       
-      selectInput(inputId = 'renda_familiar','Renda Familiar',
+      pickerInput(inputId = 'renda_familiar','Renda Familiar',
                   choices =escolhas_rendas,
-                  selected =escolhas_rendas[1]  ),
+                  selected =escolhas_rendas,
+                  options = list('actions-box'=TRUE),
+                  multiple = T),
       
-      selectInput(inputId = 'cotas','Sistema de Ingresso',
+      pickerInput(inputId = 'cotas','Sistema de Ingresso',
                   choices =escolhas_cotas,
-                  selected =escolhas_cotas[1]  ),
+                  selected =escolhas_cotas,
+                  options = list('actions-box'=TRUE),
+                  multiple = T),
       width = 3
   )
 }
@@ -77,30 +62,22 @@ filtros_lateral_raca_cor <- function() {
 #### Filtros mapas #####
 
 filtros_mapas <- function(){
-  escolhas_rendas <- 'Todas'
-  escolhas_rendas[2:5] <- levels(Estudantes$renda_familiar)
   
-  escolhas_semestre <- 'Todos'
-  escolhas_semestre[2:13] <- levels(Estudantes_RA$semestre_ingresso)
+  escolhas_campus <- unique(Estudantes_RA$campus)
   
-  escolhas_cotas <- "Todos"
-  
-  escolhas_cotas[2:3] <- unique(Estudantes$sistema_ingresso)[1:2]
-  
-  escolhas_campus <- "Todos"
-  
-  escolhas_campus[2:5] <- unique(Estudantes_RA$campus)
+  escolhas_semestres_2 <- levels(Estudantes_RA$semestre_ingresso)[6:12]
   
   
-  escolhas_semestres_2 <- escolhas_semestre[c(1,7:13)]
   box(class='floating-box',
       selectInput(inputId = 'semestre_mapas','Semestre de ingresso',
                   choices =escolhas_semestres_2,
-                  selected = "22017" ),
+                  selected = "22017"),
       
-      selectInput(inputId = 'campus_mapas','Campus Universitário',
+      pickerInput(inputId = 'campus_mapas','Campus Universitário',
                   choices =escolhas_campus,
-                  selected =escolhas_campus[1]  ),
+                  selected =escolhas_campus,
+                  options = list('actions-box'=TRUE),
+                  multiple = T),
       width = 3
   )
   

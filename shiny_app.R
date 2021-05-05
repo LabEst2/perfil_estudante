@@ -8,6 +8,13 @@ library(shinydashboard)
 library(sass)
 library(leaflet)
 library(tmap)
+library(shinyWidgets)
+
+
+#### Primeiro set o diretório do console para o lugar do arquivo, 
+### Vá em Session > Set Working ... > To source file location 
+
+
 
 `%notin%` <- Negate(`%in%`)
 #### Carregando arquivos #####
@@ -34,6 +41,7 @@ source('tabs.R', encoding = 'UTF-8')
 dbHeader <- dashboardHeader(title = tags$a(href='https://www.unb.br/',
                                            "Perfil do Estudante"))
 
+##### Página UI ######
 
 ui <-  tags$html(
   tags$head( 
@@ -54,7 +62,9 @@ ui <-  tags$html(
           filtros_lateral_inicial(),
           
           box(class = 'floating-box',
-              tabsetPanel(inicial_ui()),
+              tabsetPanel(inicial_ui(),
+                          Instituto_ui(),
+                          Curso_ui()),
               width = 9
           ))
           
@@ -81,25 +91,28 @@ ui <-  tags$html(
 )
 
 
-agrupado <- Estudantes %>% group_by(cor_raca,semestre_ingresso,renda_familiar,sistema_ingresso) %>% count()
+
 
 
 
 server <- function(input,output){
+  
+  ##### Gráfico Inicial #####
+  
   
   index <- reactive({
     Index = which(names(new_groups)==input$variable)
     Index
   })
   
-  df <- reactive({
+  df_inicial <- reactive({
     Teste = Estudantes %>% group_by(semestre_ingresso,!!new_groups[[index()]]) %>% count()
   })
   
   
   output$inicial <- 
     renderPlotly({
-      df() %>% filter(!!new_groups[[index()]]%notin%c('Outro','Nao se aplica','Ignorado')) %>%
+      df_inicial() %>% filter(!!new_groups[[index()]]%notin%c('Outro','Nao se aplica','Ignorado')) %>%
         ggplot(aes(x=semestre_ingresso,y=n,group=!!new_groups[[index()]],colour=!!new_groups[[index()]]))+
         geom_line(size=1.2)+
         ggtitle(paste0('Acompanhamento da Variável ',input$variable))+
@@ -120,43 +133,89 @@ server <- function(input,output){
               axis.line=element_line(colour='black'))
   })
   
+  #### Gráfico de Instituo ######
   
+  df_instituto <- reactive({
+    grupo_instituto <- Estudantes %>% group_by(instituto, !!new_groups[[index()]]) %>%
+      count() %>%
+      filter(instituto!='Ignorado')%>%
+      group_by(instituto) %>%
+      mutate(freq_relat=n/sum(n)) %>%
+      mutate(freq_relat=round(freq_relat,digits = 3))
+   return(grupo_instituto) 
+  })
+  
+  
+  output$Instituto_plot <- renderPlotly({
+    df_instituto() %>% 
+      ggplot(aes(x=instituto, y=freq_relat, fill= !!new_groups[[index()]] ))+
+      geom_col() +
+      scale_fill_manual(name = 'Níveis', 
+                        values = c('#A11D21','#003366','#CC9900','#055b06',
+                                   '#530202','#30075b','#406a53','#038c09',
+                                   '#05163b', '#b94c00', '#48042c')) +
+      
+      
+      ggtitle(paste0('Proporção por Instituto da Variável ',input$variable))+
+      theme_bw()+
+      labs(x='Instituto',y='Frequência Relativa')+
+      theme(legend.position = 'top',
+            plot.title = element_text(hjust=0.5),
+            axis.title.y=element_text(colour='black',size=10),
+            axis.title.x=element_text(colour='black',size=10),
+            axis.text=element_text(colour='black',size=6.5),
+            panel.border=element_blank(),
+            axis.line=element_line(colour='black'))
+  })
+  
+    ##### Reactive para gráfico de Curso #####
+  
+  df_curso <- reactive({
+    grupo_curso <- Estudantes %>% filter(instituto==input$instituto ) %>% 
+      group_by(curso, !!new_groups[[index()]]) %>%
+      count() %>%
+      filter(curso!='Ignorado')%>%
+      group_by(curso) %>%
+      mutate(freq_relat=n/sum(n)) %>%
+      mutate(freq_relat=round(freq_relat,digits = 3))
+    return(grupo_curso) 
+  })
+  
+  output$Curso_plot <- renderPlotly({
+    df_curso() %>% 
+      ggplot(aes(x=curso, y=freq_relat, fill= !!new_groups[[index()]] ))+
+      geom_col() +
+      scale_fill_manual(name = 'Níveis', 
+                        values = c('#A11D21','#003366','#CC9900','#055b06',
+                                   '#530202','#30075b','#406a53','#038c09',
+                                   '#05163b', '#b94c00', '#48042c')) +
+      
+      
+      ggtitle(paste0('Proporção dentro do ', input$instituto,' da Variável ',input$variable))+
+      theme_bw()+
+      labs(x='Instituto',y='Frequência Relativa')+
+      theme(legend.position = 'top',
+            plot.title = element_text(hjust=0.5),
+            axis.title.y=element_text(colour='black',size=10),
+            axis.title.x=element_text(colour='black',size=10),
+            axis.text=element_text(colour='black',size=6.5),
+            panel.border=element_blank(),
+            axis.line=element_line(colour='black'))
+  })
+  
+  
+  
+  
+  #### reactive para o gráfico de pizza de raça cor ####
   
   df_raca_cor <- reactive({
-    if(input$renda_familiar=='Todas'&
-       input$semestre_ingresso=='Todos' &
-       input$cotas=="Todos"){
-      Rosca_cor <- agrupado
-      
-    }else if(input$cotas=='Todos' & input$renda_familiar=="Todas"){
-      
-      Rosca_cor <- agrupado %>% filter(semestre_ingresso=='22017')
-      
-    }else if(input$cotas=='Todos' & input$semestre_ingresso=="Todos"){
-      Rosca_cor <- agrupado %>% filter(renda_familiar==input$renda_familiar)
-      
-    }else if(input$renda_familiar=='Todas' & input$semestre_ingresso=="Todos"){
-      Rosca_cor <- agrupado %>% filter(sistema_ingresso==input$cotas)
-    }
+  Rosca_cor <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+                                       renda_familiar%in%input$renda_familiar,
+                                       sistema_ingresso%in%input$cotas )
     
-    else if(input$renda_familiar=='Todas'){
-      Rosca_cor <- agrupado %>% filter(semestre_ingresso==input$semestre_ingresso,
-                                       sistema_ingresso==input$cotas)
-    }else if(input$semestre_ingresso=='Todos'){
-      Rosca_cor <- agrupado %>% filter(renda_familiar==input$renda_familiar,
-                                       sistema_ingresso==input$cotas)
-    }else if(input$cotas=="Todos"){
-      Rosca_cor <- agrupado %>% filter(renda_familiar==input$renda_familiar,
-                                       semestre_ingresso==input$semestre_ingresso)
-      
-    }else{
-      Rosca_cor <- agrupado %>% filter(semestre_ingresso==input$semestre_ingresso,
-                                       renda_familiar==input$renda_familiar,
-                                       sistema_ingresso==input$cotas)
-    }
-  Rosca_cor <- Rosca_cor %>% group_by(cor_raca) %>% summarise(n = sum(n))
+  Rosca_cor <- Rosca_cor %>% group_by(cor_raca) %>% count()
   Rosca_cor
-  })
+})
 
   
   
@@ -174,21 +233,13 @@ server <- function(input,output){
   })
   
   
-  df_mapa <- reactive({
-    if(input$semestre_mapas=="Todos" & input$campus_mapas=="Todos"){
-      parte1 <- Estudantes_RA
-     
-    }else if(input$semestre_mapas=="Todos"){
-      parte1 <- Estudantes_RA %>% filter(campus==input$campus_mapas)
- 
-    }else if(input$campus_mapas=="Todos"){
-      parte1 <- Estudantes_RA %>% filter(semestre_ingresso==input$semestre_mapas)
- 
-    }else{
-      parte1 <- Estudantes_RA %>% filter(campus==input$campus_mapas,semestre_ingresso==input$semestre_mapas)
+  #### Reactive para os mapas #####
   
-      
-    }
+  
+  df_mapa <- reactive({
+   
+    parte1 <- Estudantes_RA %>% filter(campus%in%input$campus_mapas,semestre_ingresso%in%input$semestre_mapas)
+  
     
     teste= parte1 %>% group_by(ra) %>% summarise(n = sum(n))
     DFMAPA=merge(MAPARS,teste,by=c('ra') ,duplicateGeoms = TRUE) 
@@ -216,21 +267,6 @@ shinyApp(ui = ui, server = server)
 
 
 
-
-
-### Variável instituto #####
-
-#### Gráfico vs renda #####
-
-### Raça ###
-
-### Renda Familiar ####
-
-#### Mapa #####
-
-Estudantes$transporte %>% table()
-
-rendas %>% levels()
 
 
 
