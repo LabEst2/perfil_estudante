@@ -69,9 +69,11 @@ filtros_mapas <- function(){
   
   
   box(class='floating-box',
-      selectInput(inputId = 'semestre_mapas','Semestre de ingresso',
+      pickerInput(inputId = 'semestre_mapas','Semestre de ingresso',
                   choices =escolhas_semestres_2,
-                  selected = "22017"),
+                  selected = escolhas_semestres_2,
+                  options = list('actions-box'=TRUE),
+                  multiple = T),
       
       pickerInput(inputId = 'campus_mapas','Campus Universitário',
                   choices =escolhas_campus,

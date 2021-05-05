@@ -9,6 +9,7 @@ library(sass)
 library(leaflet)
 library(tmap)
 library(shinyWidgets)
+library(sp)
 
 
 #### Primeiro set o diretório do console para o lugar do arquivo, 
@@ -65,7 +66,7 @@ ui <-  tags$html(
               tabsetPanel(inicial_ui(),
                           Instituto_ui(),
                           Curso_ui()),
-              width = 9
+              width = 12
           ))
           
         ),
@@ -89,8 +90,6 @@ ui <-  tags$html(
     )
   )
 )
-
-
 
 
 
@@ -264,9 +263,4 @@ server <- function(input,output){
 
 
 shinyApp(ui = ui, server = server)
-
-
-
-
-
 
