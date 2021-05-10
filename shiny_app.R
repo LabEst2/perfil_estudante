@@ -1,16 +1,7 @@
-library(shiny)  # Required to run any Shiny app
-library(ggplot2)  # For creating pretty plots
-library(readxl)
-library(plotly)
-library(shinythemes)
-library(tidyverse)
-library(shinydashboard)
-library(sass)
-library(leaflet)
-library(tmap)
-library(shinyWidgets)
-library(sp)
+### Carregando bibliotecas ####
 
+
+pacman::p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp)
 
 #### Primeiro set o diretório do console para o lugar do arquivo, 
 ### Vá em Session > Set Working ... > To source file location 
@@ -18,7 +9,10 @@ library(sp)
 
 
 `%notin%` <- Negate(`%in%`)
+
+
 #### Carregando arquivos #####
+
 load(file = 'Estudantes.rdata')
 
 load(file = 'Estudantes_RA.Rdata')
@@ -35,7 +29,6 @@ source('Filtros_Laterais.R', encoding = 'UTF-8')
 source('tabs.R', encoding = 'UTF-8')
 
 
-
 #### Fazendo as escolhas #####
 
 
@@ -46,7 +39,7 @@ dbHeader <- dashboardHeader(title = tags$a(href='https://www.unb.br/',
 
 ui <-  tags$html(
   tags$head( 
-    tags$style(sass(sass_file('D:/Users/Public/Documents/Docs/shiny-text-mining/www/styles.scss')))
+    tags$style(sass(sass_file('www/styles.scss')))
   ),
   dashboardPage(
     skin = "green",
@@ -118,8 +111,8 @@ server <- function(input,output){
         
         scale_linetype_manual(values = c('dotted', 'solid')) +
         
-        scale_colour_manual(name='Níveis',values=c('#A11D21','#003366','#CC9900','#055b06',
-                                                   '#530202','#30075b','#406a53','#038c09',
+        scale_colour_manual(name='Níveis',values=c('#A11D21','#003366','#CC9900','#406a53',
+                                                   '#530202','#30075b','#055b06','#038c09',
                                                    '#05163b', '#b94c00', '#48042c')) +
         theme_bw()+
         labs(x='Semestres',y='Número de Alunos Ingressos')+
@@ -139,7 +132,7 @@ server <- function(input,output){
       count() %>%
       filter(instituto!='Ignorado')%>%
       group_by(instituto) %>%
-      mutate(freq_relat=n/sum(n)) %>%
+      mutate(freq_relat=n*100/sum(n)) %>%
       mutate(freq_relat=round(freq_relat,digits = 3))
    return(grupo_instituto) 
   })
@@ -150,12 +143,12 @@ server <- function(input,output){
       ggplot(aes(x=instituto, y=freq_relat, fill= !!new_groups[[index()]] ))+
       geom_col() +
       scale_fill_manual(name = 'Níveis', 
-                        values = c('#A11D21','#003366','#CC9900','#055b06',
-                                   '#530202','#30075b','#406a53','#038c09',
+                        values = c('#A11D21','#003366','#CC9900','#406a53',
+                                   '#530202','#30075b','#055b06','#038c09',
                                    '#05163b', '#b94c00', '#48042c')) +
       
       
-      ggtitle(paste0('Proporção por Instituto da Variável ',input$variable))+
+      ggtitle(paste0('Distribuição da variável ',input$variable,' por instituo'))+
       theme_bw()+
       labs(x='Instituto',y='Frequência Relativa')+
       theme(legend.position = 'top',
@@ -175,7 +168,7 @@ server <- function(input,output){
       count() %>%
       filter(curso!='Ignorado')%>%
       group_by(curso) %>%
-      mutate(freq_relat=n/sum(n)) %>%
+      mutate(freq_relat=n*100/sum(n)) %>%
       mutate(freq_relat=round(freq_relat,digits = 3))
     return(grupo_curso) 
   })
@@ -184,15 +177,16 @@ server <- function(input,output){
     df_curso() %>% 
       ggplot(aes(x=curso, y=freq_relat, fill= !!new_groups[[index()]] ))+
       geom_col() +
+      coord_flip()+
       scale_fill_manual(name = 'Níveis', 
-                        values = c('#A11D21','#003366','#CC9900','#055b06',
-                                   '#530202','#30075b','#406a53','#038c09',
+                        values = c('#A11D21','#003366','#CC9900','#406a53',
+                                   '#530202','#30075b','#055b06','#038c09',
                                    '#05163b', '#b94c00', '#48042c')) +
       
       
-      ggtitle(paste0('Proporção dentro do ', input$instituto,' da Variável ',input$variable))+
+      ggtitle(paste0('Distribuição da variável ',input$variable,' por curso -',input$instituto))+
       theme_bw()+
-      labs(x='Instituto',y='Frequência Relativa')+
+      labs(x='',y='Frequência Relativa')+
       theme(legend.position = 'top',
             plot.title = element_text(hjust=0.5),
             axis.title.y=element_text(colour='black',size=10),
@@ -224,9 +218,9 @@ server <- function(input,output){
               textposition = 'inside',
               textinfo = 'label+percent',
               insidetextfont = list(color = '#FFFFFF'),
-              marker = list(colors = c('#A11D21','#003366','#CC9900','#055b06',
-                                        '#530202','#30075b','#406a53','#038c09',
-                                        '#05163b', '#b94c00', '#48042c'),
+              marker = list(colors = c('#A11D21','#003366','#CC9900','#406a53',
+                                       '#530202','#30075b','#055b06','#038c09',
+                                       '#05163b', '#b94c00', '#48042c'),
                             line = list(color = '#FFFFFF', width = 1)))
 
   })
@@ -263,4 +257,7 @@ server <- function(input,output){
 
 
 shinyApp(ui = ui, server = server)
+
+
+
 

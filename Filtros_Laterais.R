@@ -1,5 +1,6 @@
-library(shiny)
-library(shinyWidgets)
+
+pacman:: p_load(shiny,shinyWidgets)
+
 nomes_variaveis_filtro <- function(){
   nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Nacionalidade',
                              'Cor & Raca','Religião','Renda Familiar','Benefício Social',
