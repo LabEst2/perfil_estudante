@@ -1,25 +1,24 @@
 ### Carregando bibliotecas ####
 
-
-pacman::p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp)
+library(pacman)
+p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp)
 
 #### Primeiro set o diretório do console para o lugar do arquivo, 
 ### Vá em Session > Set Working ... > To source file location 
 
 
-
 `%notin%` <- Negate(`%in%`)
 
-
+getwd()
 #### Carregando arquivos #####
 
-load(file = 'Estudantes.rdata')
+load(file = 'Estudantes.RDATA')
 
-load(file = 'Estudantes_RA.Rdata')
+load(file = 'Estudantes_RA.RDATA')
 
-load(file = 'mapars.rdata')
+load(file = 'mapars.RDATA')
 
-load('new_groups.rdata')
+load('new_groups.RDATA')
 
 
 
@@ -38,6 +37,7 @@ dbHeader <- dashboardHeader(title = tags$a(href='https://www.unb.br/',
 ##### Página UI ######
 
 ui <-  tags$html(
+
   tags$head( 
     tags$style(sass(sass_file('www/styles.scss')))
   ),
@@ -90,7 +90,7 @@ ui <-  tags$html(
 server <- function(input,output){
   
   ##### Gráfico Inicial #####
-  
+
   
   index <- reactive({
     Index = which(names(new_groups)==input$variable)

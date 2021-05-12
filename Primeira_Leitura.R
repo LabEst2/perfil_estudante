@@ -7,7 +7,7 @@ library(stringr)
 
 `%notin%` <- Negate(`%in%`)
 
-Estudantes = read_xlsx('D:\\Users\\Public\\Documents\\Git\\perfil_estudante\\estudanteunb.xlsx')
+Estudantes = read_xlsx('estudanteunb.xlsx')
 
 
 ### Fazendo mudanças pertinentes nas variáveis ###########
@@ -124,13 +124,13 @@ nomes_de_apresentacao <- sort(nomes_de_apresentacao)
 
 names(new_groups) <- nomes_de_apresentacao
 
-save(new_groups,file = 'D:/Users/Public/Documents/Git/perfil_estudante/new_groups.RDATA')
+save(new_groups,file = 'new_groups.RDATA')
 
 
 #### Salvando arquivo rdata ######
 
 
-save(Estudantes, file = 'D:/Users/Public/Documents/Git/perfil_estudante/Estudantes.RDATA')
+save(Estudantes, file = 'Estudantes.RDATA')
 
 ##### Gráficos ########
 
