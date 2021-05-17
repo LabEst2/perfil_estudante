@@ -38,8 +38,11 @@ Estudantes$renda_familiar <- as.factor(Estudantes$renda_familiar)
 
 levels(Estudantes$renda_familiar)
 Estudantes$renda_familiar <- ordered(Estudantes$renda_familiar,
-                                        levels= c("Até 3 SM", "De 3 a 10 SM","De 10 a 20 SM" ,
-                                                  "Mais de 20 SM"))
+                                        levels= c("Mais de 20 SM","De 10 a 20 SM" , "De 3 a 10 SM","Até 3 SM"
+                                                  ))
+
+
+Estudantes$renda_familiar %>% levels()
 
 
 
@@ -67,44 +70,60 @@ Estudantes$sexo <- ordered(Estudantes$sexo,
 
 
 
-##### Criação de vetores com os principais filtros das principais variáveis #######
+##### Criar Vetor para variáveis #######
 
-modalidades = Estudantes$modalidade_ingresso %>% unique()
 
-semestres = Estudantes$semestre_ingresso %>% unique()
+Estudantes$escolaridade_pai %>% unique()
 
-rendas = Estudantes$renda_familiar %>% unique()
+Estudantes$escolaridade_mae <- factor(Estudantes$escolaridade_mae,
+                                      levels = c("Ignorado", "Pós-graduação",
+                                                 "Ensino superior completo",
+                                                 "Ensino superior incompleto","Ensino médio completo",
+                                                 "Ensino médio incompleto" ,  "Ensino fundamental completo",
+                                                 "Ensino fundamental incompleto","Não sabe ler nem escrever" ,
+                                                 "Não sabe informar"),
+                                      ordered = T)
 
-em_s = Estudantes$ensino_medio %>% unique()
 
-ef_s = Estudantes$ensino_fundamental %>% unique()
 
-sexos = Estudantes$sexo %>% unique()
+Estudantes$escolaridade_pai <- factor(Estudantes$escolaridade_pai,
+                                      levels  = c("Ignorado", "Pós-graduação",
+                                                 "Ensino superior completo",
+                                                 "Ensino superior incompleto","Ensino médio completo",
+                                                 "Ensino médio incompleto" ,  "Ensino fundamental completo",
+                                                 "Ensino fundamental incompleto","Não sabe ler nem escrever" ,
+                                                 "Não sabe informar"),
+                                      ordered = T)
 
-transportes = Estudantes$transporte %>% unique()
+Estudantes$pessoas_vivem_da_renda %>% unique()
 
-tentativas = Estudantes$tentativas %>% unique()
+Estudantes$pessoas_vivem_da_renda <- factor(Estudantes$pessoas_vivem_da_renda, 
+                                levels  = c("9 ou mais","8" ,'7',
+                                            '6','5','4','3','2','1','Ignorado'),
+                                ordered = T)
+
+
+
 
 
 #### Criando Variável com nomes das variáveis e variáveis em groups que podem ser chamadas #####
 
-
-nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Nacionalidade',
-                           'Cor & Raca','Religião','Renda Familiar','Benefício Social',
-                           'Pessoas vivem da renda','Escolaridade Pai','Escolaridade Mãe','Ensino Fundamental',
-                           'Ensino Médio','Tipo de ensino médio','Necessidade Especial','Tentativas','Auxilio',
-                           'Idioma','Curso Desejado','Trocaria de Curso','Curso Preparatório','Transporte',
-                           'Sistema de Ingresso')
+Estudantes$beneficio_social %>% unique()
 
 
-names(groups)
+nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",
+                           'Cor & Raca','Renda Familiar','Pessoas vivem da renda',
+                           'Escolaridade Pai','Escolaridade Mãe','Ensino Fundamental',
+                           'Ensino Médio','Necessidade Especial','Curso Desejado',
+                           'Trocaria de Curso','Curso Preparatório','Sistema de Ingresso')
 
 
-groups = c(quo(modalidade_ingresso), quo(atendimento_especial),quo(sexo),quo(nacionalidade),
-           quo(cor_raca),quo(religiao),quo(renda_familiar),quo(beneficio_social),quo(pessoas_vivem_da_renda),
-           quo(escolaridade_pai),quo(escolaridade_mae),quo(ensino_fundamental),quo(ensino_medio),quo(tipo_ensino_medio),
-           quo(necessidade_especial),quo(tentativas),quo(auxilio),quo(idioma),quo(curso_desejado),quo(trocaria_curso),
-           quo(curso_preparatorio),quo(transporte),quo(sistema_ingresso))
+
+groups = c(quo(modalidade_ingresso), quo(atendimento_especial),quo(sexo),
+           quo(cor_raca),quo(renda_familiar),quo(pessoas_vivem_da_renda),
+           quo(escolaridade_pai),quo(escolaridade_mae),quo(ensino_fundamental),quo(ensino_medio)
+           ,quo(necessidade_especial),quo(curso_desejado),quo(trocaria_curso),
+           quo(curso_preparatorio),quo(sistema_ingresso))
 
 
 names(groups) <- nomes_de_apresentacao
@@ -132,23 +151,31 @@ save(new_groups,file = 'new_groups.RDATA')
 
 save(Estudantes, file = 'Estudantes.RDATA')
 
+
+
 ##### Gráficos ########
 
 
 ###página inicial ####
 
-Teste = Estudantes %>% group_by(semestre_ingresso,cor_raca) %>% count()
 
-Teste %>% filter( cor_raca %notin%c('Outro','Nao se aplica','Ignorado')) %>% 
-  ggplot(aes(x=semestre_ingresso,y=n,group=cor_raca,colour=cor_raca))+
-  geom_line(size=1.2)+
-  ggtitle(paste0('Acompanhamento da Variável ','cor_raca'))+
+
+
+Teste <- Estudantes %>% filter(escolaridade_mae%notin%c('Ignorado')) %>% group_by(escolaridade_mae)%>% 
+              count()
+
+
+
+
+
+Teste %>% 
+ggplot(aes(x=reorder(escolaridade_mae,-order(escolaridade_mae) ), y=n))+
+  geom_col(fill ='#A11D21' ) +
+  coord_flip()+
   
-  scale_linetype_manual(values = c('dotted', 'solid')) +
-  
-  scale_colour_manual(name='Origem do Banco',values=c('#A11D21','#003366','darkgreen',2,3,5,'green')) +
+  ggtitle("Frequência Absoluta da Escolaridade da Mãe")+
   theme_bw()+
-  labs(x='Semestres',y='Número de Alunos Ingressos')+
+  labs(x='',y='')+
   theme(legend.position = 'top',
         plot.title = element_text(hjust=0.5),
         axis.title.y=element_text(colour='black',size=10),
@@ -156,37 +183,4 @@ Teste %>% filter( cor_raca %notin%c('Outro','Nao se aplica','Ignorado')) %>%
         axis.text=element_text(colour='black',size=6.5),
         panel.border=element_blank(),
         axis.line=element_line(colour='black'))
-
-##### Descritiva de cor e raça ########
-
-agrupado <- Estudantes %>% group_by(cor_raca,semestre_ingresso,renda_familiar) %>% count()
-
-
-
-Rosca_cor <- agrupado %>% filter(semestre_ingresso%in%semestres,
-                     renda_familiar%in%rendas,
-                     ensino_medio%in%em_s,
-                     ensino_fundamental%in%ef_s,
-                     sexo%in%sexos,
-                     modalidade_ingresso%in%modalidades)
-
-
-
-Rosca_cor <- Rosca_cor %>% filter(cor_raca!='Ignorado')
-
-Rosca_cor %>% 
-ggplot(aes(x="", y=n, fill=cor_raca)) +
-  geom_bar(stat="identity", width=1) +
-  scale_fill_manual(name='Cor & Raça',values=c('#A11D21','#003366','darkgreen',2,3,5,'green')) +
-  coord_polar("y", start=0) +
-  theme_bw()+
-  theme(legend.position = 'top',
-        axis.title=element_blank(),
-        axis.text=element_blank(),
-        panel.border=element_blank(),
-        axis.ticks=element_blank(),
-        panel.grid=element_blank())
-
-
-agrupado$transporte %>% table()
 

@@ -2,12 +2,14 @@
 pacman:: p_load(shiny,shinyWidgets)
 
 nomes_variaveis_filtro <- function(){
-  nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",'Nacionalidade',
-                             'Cor & Raca','Religião','Renda Familiar','Benefício Social',
-                             'Pessoas vivem da renda','Escolaridade Pai','Escolaridade Mãe','Ensino Fundamental',
-                             'Ensino Médio','Tipo de ensino médio','Necessidade Especial','Tentativas','Auxilio',
-                             'Idioma','Curso Desejado','Trocaria de Curso','Curso Preparatório','Transporte',
-                             'Sistema de Ingresso')
+  
+  nomes_de_apresentacao <- c('Modalidade de Ingresso',"Atendimento Especial","Sexo",
+                             'Cor & Raca','Renda Familiar','Pessoas vivem da renda',
+                             'Escolaridade Pai','Escolaridade Mãe','Ensino Fundamental',
+                             'Ensino Médio','Necessidade Especial','Curso Desejado',
+                             'Trocaria de Curso','Curso Preparatório','Sistema de Ingresso')
+  
+  
   nomes_de_apresentacao <- sort(nomes_de_apresentacao)
   return(nomes_de_apresentacao)
 }

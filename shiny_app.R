@@ -31,7 +31,7 @@ source('tabs.R', encoding = 'UTF-8')
 #### Fazendo as escolhas #####
 
 
-dbHeader <- dashboardHeader(title = tags$a(href='https://www.unb.br/',
+dbHeader <- dashboardHeader(title = tags$a(href='https://github.com/LabEst2/perfil_estudante',
                                            "Perfil do Estudante"))
 
 ##### Página UI ######
@@ -68,7 +68,11 @@ ui <-  tags$html(
           filtros_lateral_raca_cor(),
           box(class='floating-box',
               tabsetPanel(
-                Raca_cor_ui()
+                Raca_cor_ui(),
+                Escolaridae_ui(),
+                Ensino_medio_ui(),
+                Ensino_fundamental_ui()
+                
               ),width = 9))),
         
         tabItem(tabName = 'mapas',fluidRow(
@@ -128,7 +132,8 @@ server <- function(input,output){
   #### Gráfico de Instituo ######
   
   df_instituto <- reactive({
-    grupo_instituto <- Estudantes %>% group_by(instituto, !!new_groups[[index()]]) %>%
+    grupo_instituto <- Estudantes %>% filter(!!new_groups[[index()]]%notin% c('Ignorado')) %>% 
+      group_by(instituto, !!new_groups[[index()]]) %>%
       count() %>%
       filter(instituto!='Ignorado')%>%
       group_by(instituto) %>%
@@ -163,7 +168,7 @@ server <- function(input,output){
     ##### Reactive para gráfico de Curso #####
   
   df_curso <- reactive({
-    grupo_curso <- Estudantes %>% filter(instituto==input$instituto ) %>% 
+    grupo_curso <- Estudantes %>% filter(instituto==input$instituto,!!new_groups[[index()]]%notin%c('Ignorado')) %>% 
       group_by(curso, !!new_groups[[index()]]) %>%
       count() %>%
       filter(curso!='Ignorado')%>%
@@ -223,7 +228,139 @@ server <- function(input,output){
                                        '#05163b', '#b94c00', '#48042c'),
                             line = list(color = '#FFFFFF', width = 1)))
 
+
   })
+  
+  ### Escolaridade dos Pais ######
+  
+  df_escolaridade_mae <- reactive({
+    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+                                       renda_familiar%in%input$renda_familiar,
+                                       sistema_ingresso%in%input$cotas,
+                                       escolaridade_mae%notin%c('Ignorado'))
+    
+    escol_mae <- escol_mae %>% group_by(escolaridade_mae) %>% count()
+    escol_mae
+  })
+  
+  
+  output$escolaridade_mae <- renderPlotly({
+    df_escolaridade_mae() %>% 
+      ggplot(aes(x=reorder(escolaridade_mae,-order(escolaridade_mae)), y=n))+
+      geom_col(fill ='#A11D21' ) +
+      coord_flip()+
+      ggtitle("Frequência Absoluta da Escolaridade da Mãe")+
+      theme_bw()+
+      labs(x='',y='')+
+      theme(legend.position = 'top',
+            plot.title = element_text(hjust=0.5),
+            axis.title.y=element_text(colour='black',size=10),
+            axis.title.x=element_text(colour='black',size=10),
+            axis.text=element_text(colour='black',size=6.5),
+            panel.border=element_blank(),
+            axis.line=element_line(colour='black'))
+    
+    
+  })
+  
+  
+  df_escolaridade_pai <- reactive({
+    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+                                       renda_familiar%in%input$renda_familiar,
+                                       sistema_ingresso%in%input$cotas,
+                                       escolaridade_pai%notin%c('Ignorado'))
+    
+    escol_mae <- escol_mae %>% group_by(escolaridade_pai) %>% count()
+    escol_mae
+  })
+  
+  
+  output$escolaridade_pai <- renderPlotly({
+    df_escolaridade_pai() %>% 
+      ggplot(aes(x=reorder(escolaridade_pai,-order(escolaridade_pai)), y=n))+
+      geom_col(fill ='#003366' ) +
+      coord_flip()+
+      ggtitle("Frequência Absoluta da Escolaridade do Pai")+
+      theme_bw()+
+      labs(x='',y='')+
+      theme(legend.position = 'top',
+            plot.title = element_text(hjust=0.5),
+            axis.title.y=element_text(colour='black',size=10),
+            axis.title.x=element_text(colour='black',size=10),
+            axis.text=element_text(colour='black',size=6.5),
+            panel.border=element_blank(),
+            axis.line=element_line(colour='black'))
+    
+    
+  })
+  
+  
+  #### Ensino Médio #####
+  
+  df_em <- reactive({
+    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+                                       renda_familiar%in%input$renda_familiar,
+                                       sistema_ingresso%in%input$cotas,
+                                       ensino_medio%notin%c('Ignorado'))
+    
+    escol_mae <- escol_mae %>% group_by(ensino_medio) %>% count()
+    escol_mae
+  })
+  
+  
+  output$ensino_medio <- renderPlotly({
+    df_em() %>% 
+      ggplot(aes(x=reorder(ensino_medio,-order(ensino_medio)), y=n))+
+      geom_col(fill ='#406a53' ) +
+      coord_flip()+
+      ggtitle("Frequência Absoluta Escola Ensino Médio")+
+      theme_bw()+
+      labs(x='',y='')+
+      theme(legend.position = 'top',
+            plot.title = element_text(hjust=0.5),
+            axis.title.y=element_text(colour='black',size=10),
+            axis.title.x=element_text(colour='black',size=10),
+            axis.text=element_text(colour='black',size=6.5),
+            panel.border=element_blank(),
+            axis.line=element_line(colour='black'))
+    
+    
+  })
+  
+  
+  ### Ensino Fundamental ######
+  
+  
+  df_ef <- reactive({
+    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+                                       renda_familiar%in%input$renda_familiar,
+                                       sistema_ingresso%in%input$cotas,
+                                       ensino_fundamental%notin%c('Ignorado'))
+    
+    escol_mae <- escol_mae %>% group_by(ensino_fundamental) %>% count()
+    escol_mae
+  })
+  
+  
+  output$ensino_fundamental <- renderPlotly({
+    df_ef() %>% 
+      ggplot(aes(x=reorder(ensino_fundamental,-order(ensino_fundamental)), y=n))+
+      geom_col(fill ='#406a53' ) +
+      coord_flip()+
+      ggtitle("Frequência Absoluta Escola Ensino Fundamental")+
+      theme_bw()+
+      labs(x='',y='')+
+      theme(legend.position = 'top',
+            plot.title = element_text(hjust=0.5),
+            axis.title.y=element_text(colour='black',size=10),
+            axis.title.x=element_text(colour='black',size=10),
+            axis.text=element_text(colour='black',size=6.5),
+            panel.border=element_blank(),
+            axis.line=element_line(colour='black'))
+    
+    
+  })
+  
   
   
   #### Reactive para os mapas #####

@@ -14,6 +14,38 @@ Raca_cor_ui <- function(){
   )
 }
 
+
+#### Escolaridade dos Pais ######
+
+Escolaridae_ui <- function(){
+  tabPanel("Escolaridade dos Pais",
+           plotlyOutput('escolaridade_mae'),
+           plotlyOutput('escolaridade_pai')
+           
+  )
+}
+
+
+
+#### Ensino médio ######
+
+Ensino_medio_ui <- function(){
+  tabPanel("Ensino Médio",
+           plotlyOutput('ensino_medio')
+           
+  )
+}
+
+
+Ensino_fundamental_ui <- function(){
+  tabPanel("Ensino Fundamental",
+           plotlyOutput('ensino_fundamental')
+           
+  )
+}
+
+
+
 ##### Mapas ######
 
 mapa_ui <- function(){
