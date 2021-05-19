@@ -21,7 +21,7 @@ filtros_lateral_inicial <- function() {
   box(class='floating-box',
       selectInput("variable", "Variáveis",
                   choices = nomes_variaveis_filtro(),
-                  selected = "Renda Familiar"
+                  selected = "Sistema de Ingresso"
       ),
       width = 3
   )

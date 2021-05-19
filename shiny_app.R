@@ -28,8 +28,6 @@ load('Escolaridades.Rdata')
 
 
 
-
-
 #### Carregando funções #####
 
 source('Filtros_Laterais.R', encoding = 'UTF-8')
@@ -64,7 +62,8 @@ ui <-  tags$html(
           filtros_lateral_inicial(),
           
           box(class = 'floating-box',
-              tabsetPanel(inicial_ui(),
+              tabsetPanel(Inicial_ui(),
+                          Linha_temporal_ui(),
                           Instituto_ui(),
                           Curso_ui()),
               width = 12
@@ -99,6 +98,8 @@ ui <-  tags$html(
 
 
 
+
+
 server <- function(input,output){
   
   ##### Gráfico Inicial #####
@@ -119,7 +120,7 @@ server <- function(input,output){
       df_inicial() %>% filter(!!new_groups[[index()]]%notin%c('Outro','Nao se aplica','Ignorado')) %>%
         ggplot(aes(x=semestre_ingresso,y=n,group=!!new_groups[[index()]],colour=!!new_groups[[index()]]))+
         geom_line(size=1.2)+
-        ggtitle(paste0('Acompanhamento da Variável ',input$variable))+
+        ggtitle(paste0('Evolução por Semestre - ',input$variable))+
         
         scale_linetype_manual(values = c('dotted', 'solid')) +
         
@@ -161,7 +162,7 @@ server <- function(input,output){
                                    '#05163b', '#b94c00', '#48042c')) +
       
       
-      ggtitle(paste0('Distribuição da variável ',input$variable,' por instituo'))+
+      ggtitle(paste0('Distribuição por Instituto - ',input$variable))+
       theme_bw()+
       labs(x='Instituto',y='Frequência Relativa')+
       theme(legend.position = 'top',
@@ -197,7 +198,7 @@ server <- function(input,output){
                                    '#05163b', '#b94c00', '#48042c')) +
       
       
-      ggtitle(paste0('Distribuição da variável ',input$variable,' por curso -',input$instituto))+
+      ggtitle(paste0('Distribuição por da variável ',input$variable ,'Instituto - ',input$instituto))+
       theme_bw()+
       labs(x='',y='Frequência Relativa')+
       theme(legend.position = 'top',
@@ -255,7 +256,7 @@ server <- function(input,output){
   
   output$escolaridade_pais <- renderPlotly({
     df_escolaridade_pais() %>% 
-      ggplot(aes(x=value,y=n,fill=variable))+geom_col(position = 'dodge')+
+      ggplot(aes(x=reorder(value,-order(value)),y=n,fill=variable))+geom_col(position = 'dodge')+
       
       scale_fill_manual(name='Escolaridade',values=c('#A11D21',
                                                      '#003366'), labels= c('Mãe',"Pai"))+
@@ -290,9 +291,9 @@ server <- function(input,output){
   output$ensino_medio <- renderPlotly({
     df_em() %>% 
       ggplot(aes(x=reorder(ensino_medio,-order(ensino_medio)), y=n))+
-      geom_col(fill ='#406a53' ) +
+      geom_col(fill ='#003366' ) +
       coord_flip()+
-      ggtitle("Frequência Absoluta Escola Ensino Médio")+
+      ggtitle("")+
       theme_bw()+
       labs(x='',y='')+
       theme(legend.position = 'top',
@@ -324,9 +325,9 @@ server <- function(input,output){
   output$ensino_fundamental <- renderPlotly({
     df_ef() %>% 
       ggplot(aes(x=reorder(ensino_fundamental,-order(ensino_fundamental)), y=n))+
-      geom_col(fill ='#406a53' ) +
+      geom_col(fill ='#003366' ) +
       coord_flip()+
-      ggtitle("Frequência Absoluta Escola Ensino Fundamental")+
+      ggtitle("")+
       theme_bw()+
       labs(x='',y='')+
       theme(legend.position = 'top',
@@ -367,13 +368,11 @@ server <- function(input,output){
     
   })
   
-
   
 }
 
 
 shinyApp(ui = ui, server = server)
-
 
 
 

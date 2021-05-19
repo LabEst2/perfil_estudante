@@ -1,7 +1,17 @@
 #### Tab inicial ####
 
-inicial_ui <- function(){
-  tabPanel("Inicial",plotlyOutput('inicial')
+Inicial_ui <- function(){
+  tabPanel("Inicial",
+             mainPanel(
+               img(src= 'www/unb-corredor.jpg',align = "right", width=140))
+           )
+           
+}
+
+
+#### Linha temporal 
+Linha_temporal_ui <- function(){
+  tabPanel("Linha Temporal",plotlyOutput('linhatemporal')
            
   )
 }
