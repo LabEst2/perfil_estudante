@@ -1,10 +1,11 @@
 ### Carregando bibliotecas ####
 
 library(pacman)
-p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp,reshape2)
+p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp,reshape2,magick)
 
 #### Primeiro set o diretório do console para o lugar do arquivo, 
 ### Vá em Session > Set Working ... > To source file location 
+
 
 
 `%notin%` <- Negate(`%in%`)
@@ -34,8 +35,6 @@ source('tabs.R', encoding = 'UTF-8')
 
 
 
-
-
 #### Fazendo as escolhas #####
 
 
@@ -61,13 +60,7 @@ ui <-  tags$html(
     ),
     dashboardBody(
       tabItems(
-        tabItem(tabName = 'incial',
-                fluidRow(
-                  tabsetPanel(
-                    Inicial_ui()
-                  )
-                  
-                )),
+        tabItem(tabName = "inicial", inicial_ui()),
         
         tabItem(tabName = "analises", fluidRow(
           filtros_lateral_inicial(),
@@ -115,7 +108,7 @@ ui <-  tags$html(
 server <- function(input,output){
   
   ##### Gráfico Inicial #####
-
+  
   
   index <- reactive({
     Index = which(names(new_groups)==input$variable)

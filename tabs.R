@@ -1,13 +1,24 @@
+library(shiny)
+
 #### Tab inicial ####
 
-Inicial_ui <- function(){
-  tabPanel("Inicial",
-             mainPanel(
-               img(src= 'www/unb-corredor.jpg',align = "right", width=140))
-           )
-           
-}
 
+
+
+inicial_ui <- function(){
+  url = "https://lh3.googleusercontent.com/proxy/qF4SXh-N9H2faU6VVYBf2wthk9WmidBEDRDo9Pmf2Qly--jShtPafuITcO9EY7EtJohEJp4Kj3pwIdJzRhhzlhBPK84ZSMtQQ0sQFOaIqZNga8qOXRwOrGGxDQNOvUR3tHD19gCAYj9TEPyCElGs_g"
+  
+  fluidRow(
+    solidHeader = F,
+    collapsible = T, width = 12,
+    column(12, align = "center", 
+           tags$div(
+             class='floating-box about-text',
+             tags$h2('Conheça o Perfil do Estudante de UNB', class='about-title'),
+             img(src=url,align=''))
+           
+    ))
+}
 
 #### Linha temporal 
 Linha_temporal_ui <- function(){
@@ -96,6 +107,27 @@ Curso_ui <- function() {
                plotlyOutput('Curso_plot'),
                style='overflow-y: scroll; max-height: 82vh;'
              )))
+}
+
+
+##### ABA SOBRE  #####
+#readLines('www/sobre.txt', encoding='UTF-8')
+
+
+
+sobre_ui <- function() {
+  texto <- readLines('www/sobre.txt', encoding='UTF-8')
+  
+  fluidRow(
+    solidHeader = F,
+    collapsible = T, width = 12,
+    column(12, align = "left", 
+           tags$div(
+             class='floating-box about-text',
+             tags$h2('Sobre este trabalho', class='about-title'),
+             HTML(texto)
+           )
+    ))
 }
 
 
