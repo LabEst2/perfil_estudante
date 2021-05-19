@@ -1,7 +1,7 @@
 ### Carregando bibliotecas ####
 
 library(pacman)
-p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp)
+p_load(shiny,ggplot2,readxl,plotly,shinythemes,tidyverse,shinydashboard,sass,leaflet,tmap,shinyWidgets,sp,reshape2)
 
 #### Primeiro set o diretório do console para o lugar do arquivo, 
 ### Vá em Session > Set Working ... > To source file location 
@@ -19,6 +19,14 @@ load(file = 'Estudantes_RA.RDATA')
 load(file = 'mapars.RDATA')
 
 load('new_groups.RDATA')
+
+load('Escolaridades.Rdata')
+
+
+#### Banco necessário ######
+
+
+
 
 
 
@@ -233,63 +241,34 @@ server <- function(input,output){
   
   ### Escolaridade dos Pais ######
   
-  df_escolaridade_mae <- reactive({
-    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+  df_escolaridade_pais <- reactive({
+    escol_pais <- Escolaridades %>% filter(semestre_ingresso%in%input$semestre_ingresso,
                                        renda_familiar%in%input$renda_familiar,
-                                       sistema_ingresso%in%input$cotas,
-                                       escolaridade_mae%notin%c('Ignorado'))
+                                       sistema_ingresso%in%input$cotas)
     
-    escol_mae <- escol_mae %>% group_by(escolaridade_mae) %>% count()
-    escol_mae
+    
+    
+    escol_pais <- escol_pais %>% group_by(variable,value) %>% count
+    escol_pais
   })
   
   
-  output$escolaridade_mae <- renderPlotly({
-    df_escolaridade_mae() %>% 
-      ggplot(aes(x=reorder(escolaridade_mae,-order(escolaridade_mae)), y=n))+
-      geom_col(fill ='#A11D21' ) +
+  output$escolaridade_pais <- renderPlotly({
+    df_escolaridade_pais() %>% 
+      ggplot(aes(x=value,y=n,fill=variable))+geom_col(position = 'dodge')+
+      
+      scale_fill_manual(name='Escolaridade',values=c('#A11D21',
+                                                     '#003366'), labels= c('Mãe',"Pai"))+
       coord_flip()+
-      ggtitle("Frequência Absoluta da Escolaridade da Mãe")+
-      theme_bw()+
       labs(x='',y='')+
-      theme(legend.position = 'top',
-            plot.title = element_text(hjust=0.5),
-            axis.title.y=element_text(colour='black',size=10),
-            axis.title.x=element_text(colour='black',size=10),
-            axis.text=element_text(colour='black',size=6.5),
-            panel.border=element_blank(),
-            axis.line=element_line(colour='black'))
-    
-    
-  })
-  
-  
-  df_escolaridade_pai <- reactive({
-    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
-                                       renda_familiar%in%input$renda_familiar,
-                                       sistema_ingresso%in%input$cotas,
-                                       escolaridade_pai%notin%c('Ignorado'))
-    
-    escol_mae <- escol_mae %>% group_by(escolaridade_pai) %>% count()
-    escol_mae
-  })
-  
-  
-  output$escolaridade_pai <- renderPlotly({
-    df_escolaridade_pai() %>% 
-      ggplot(aes(x=reorder(escolaridade_pai,-order(escolaridade_pai)), y=n))+
-      geom_col(fill ='#003366' ) +
-      coord_flip()+
-      ggtitle("Frequência Absoluta da Escolaridade do Pai")+
       theme_bw()+
-      labs(x='',y='')+
-      theme(legend.position = 'top',
-            plot.title = element_text(hjust=0.5),
-            axis.title.y=element_text(colour='black',size=10),
-            axis.title.x=element_text(colour='black',size=10),
-            axis.text=element_text(colour='black',size=6.5),
+      theme(legend.position = 'rigth',
+            axis.title.y=element_text(colour='black',size=12),
+            axis.title.x=element_text(colour='black',size=12),
+            axis.text=element_text(colour='black',size=9.5),
             panel.border=element_blank(),
-            axis.line=element_line(colour='black'))
+            axis.line=element_line(colour='black'))+
+      theme(legend.position='top')
     
     
   })
@@ -298,13 +277,13 @@ server <- function(input,output){
   #### Ensino Médio #####
   
   df_em <- reactive({
-    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+    escola_EM <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
                                        renda_familiar%in%input$renda_familiar,
                                        sistema_ingresso%in%input$cotas,
                                        ensino_medio%notin%c('Ignorado'))
     
-    escol_mae <- escol_mae %>% group_by(ensino_medio) %>% count()
-    escol_mae
+    escola_EM <- escola_EM %>% group_by(ensino_medio) %>% count()
+    escola_EM
   })
   
   
@@ -332,13 +311,13 @@ server <- function(input,output){
   
   
   df_ef <- reactive({
-    escol_mae <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
+    escola_fund <- Estudantes %>% filter(semestre_ingresso%in%input$semestre_ingresso,
                                        renda_familiar%in%input$renda_familiar,
                                        sistema_ingresso%in%input$cotas,
                                        ensino_fundamental%notin%c('Ignorado'))
     
-    escol_mae <- escol_mae %>% group_by(ensino_fundamental) %>% count()
-    escol_mae
+    escola_fund <- escola_fund %>% group_by(ensino_fundamental) %>% count()
+    escola_fund
   })
   
   

@@ -38,8 +38,8 @@ Estudantes$renda_familiar <- as.factor(Estudantes$renda_familiar)
 
 levels(Estudantes$renda_familiar)
 Estudantes$renda_familiar <- ordered(Estudantes$renda_familiar,
-                                        levels= c("Mais de 20 SM","De 10 a 20 SM" , "De 3 a 10 SM","Até 3 SM"
-                                                  ))
+                                        levels= c("Mais de 20 SM","De 10 a 20 SM" , 
+                                                  "De 3 a 10 SM","Até 3 SM" ))
 
 
 Estudantes$renda_familiar %>% levels()
@@ -81,8 +81,9 @@ Estudantes$escolaridade_mae <- factor(Estudantes$escolaridade_mae,
                                                  "Ensino superior incompleto","Ensino médio completo",
                                                  "Ensino médio incompleto" ,  "Ensino fundamental completo",
                                                  "Ensino fundamental incompleto","Não sabe ler nem escrever" ,
-                                                 "Não sabe informar"),
-                                      ordered = T)
+                                                 "Não sabe informar"),ordered = T)
+
+
 
 
 
@@ -92,10 +93,12 @@ Estudantes$escolaridade_pai <- factor(Estudantes$escolaridade_pai,
                                                  "Ensino superior incompleto","Ensino médio completo",
                                                  "Ensino médio incompleto" ,  "Ensino fundamental completo",
                                                  "Ensino fundamental incompleto","Não sabe ler nem escrever" ,
-                                                 "Não sabe informar"),
-                                      ordered = T)
+                                                 "Não sabe informar"),ordered = T)
+
 
 Estudantes$pessoas_vivem_da_renda %>% unique()
+
+
 
 Estudantes$pessoas_vivem_da_renda <- factor(Estudantes$pessoas_vivem_da_renda, 
                                 levels  = c("9 ou mais","8" ,'7',
@@ -104,6 +107,33 @@ Estudantes$pessoas_vivem_da_renda <- factor(Estudantes$pessoas_vivem_da_renda,
 
 
 
+#### Crinaod banco Escolaridades #####
+
+
+Escolaridades <-  Estudantes %>% filter(escolaridade_mae%notin%c('Ignorado'),
+                                        escolaridade_pai%notin%c('Ignorado')) %>% select(c(semestre_ingresso, renda_familiar,
+                                                                                           sistema_ingresso,
+                                                                                           escolaridade_mae,escolaridade_pai))
+
+Escolaridades= melt(Escolaridades,id.vars = c('semestre_ingresso', 'renda_familiar','sistema_ingresso'))
+
+
+Escolaridades$value <- factor(Escolaridades$value,
+                              levels  = c("Pós-graduação","Ensino superior completo",
+                                          "Ensino superior incompleto","Ensino médio completo",
+                                          "Ensino médio incompleto" ,  "Ensino fundamental completo",
+                                          "Ensino fundamental incompleto","Não sabe ler nem escrever" ,
+                                          "Não sabe informar"),
+                              ordered = T)
+
+
+Escolaridades$variable <- factor(Escolaridades$variable ,
+                                 levels  = c('escolaridade_mae','escolaridade_pai'),
+                                 labels = c("Escolaridade Mãe","Escolaridade Pai"))
+
+
+
+save(Escolaridades, file="Escolaridades.Rdata")
 
 
 #### Criando Variável com nomes das variáveis e variáveis em groups que podem ser chamadas #####

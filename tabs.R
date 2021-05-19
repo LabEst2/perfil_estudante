@@ -19,8 +19,7 @@ Raca_cor_ui <- function(){
 
 Escolaridae_ui <- function(){
   tabPanel("Escolaridade dos Pais",
-           plotlyOutput('escolaridade_mae'),
-           plotlyOutput('escolaridade_pai')
+           plotlyOutput('escolaridade_pais')
            
   )
 }
