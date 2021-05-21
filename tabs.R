@@ -1,12 +1,12 @@
 library(shiny)
-
+library(magick)
 #### Tab inicial ####
 
 
 
 
 inicial_ui <- function(){
-  url = "https://lh3.googleusercontent.com/proxy/qF4SXh-N9H2faU6VVYBf2wthk9WmidBEDRDo9Pmf2Qly--jShtPafuITcO9EY7EtJohEJp4Kj3pwIdJzRhhzlhBPK84ZSMtQQ0sQFOaIqZNga8qOXRwOrGGxDQNOvUR3tHD19gCAYj9TEPyCElGs_g"
+  url = "https://noticias.unb.br/images/Noticias/Fotos_frequentes/ICC/09052018_ICC_Secom.jpg"
   
   fluidRow(
     solidHeader = F,
@@ -14,8 +14,8 @@ inicial_ui <- function(){
     column(12, align = "center", 
            tags$div(
              class='floating-box about-text',
-             tags$h2('Conheça o Perfil do Estudante de UNB', class='about-title'),
-             img(src=url,align=''))
+             tags$h2('Conheça o Perfil do Estudante da UNB', class='about-title'),
+             img(src=url))
            
     ))
 }

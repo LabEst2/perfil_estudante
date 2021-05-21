@@ -61,10 +61,10 @@ ui <-  tags$html(
     ),
     dashboardBody(
       tabItems(
-        tabItem(tabName = 'incial',
+        tabItem(tabName = 'inicial',
                 fluidRow(
                   tabsetPanel(
-                    Inicial_ui()
+                    inicial_ui()
                   )
                   
                 )),
